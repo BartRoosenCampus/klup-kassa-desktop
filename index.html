@@ -135,16 +135,14 @@
     </div>
 </div>
 
-<!-- POP-UP VENSTER VOOR NAAM/TAFEL SELECTIE (Met Knoppen) -->
+<!-- POP-UP VENSTER VOOR NIEUWE REKENING OP NAAM -->
 <div id="naamModal" class="modal">
     <div class="modal-content">
         <h3>Kies Naam of Tafel</h3>
 
         <div class="form-group">
             <label>Bestaande openstaande tafel / naam:</label>
-            <div id="bestaandeNamenKnoppen" class="modal-btn-grid">
-                <!-- Wordt dynamisch gevuld via script.js -->
-            </div>
+            <div id="bestaandeNamenKnoppen" class="modal-btn-grid"></div>
         </div>
 
         <div style="text-align: center; margin: 15px 0; font-weight: bold; color: #aaa;">OF</div>
@@ -170,30 +168,9 @@
         <p id="betaalInfoTekst" style="font-size: 14px; color: var(--text-muted); margin-bottom: 15px;"></p>
 
         <div class="modal-btn-grid" style="grid-template-columns: 1fr; gap: 10px; max-height: none;">
-            <button class="btn btn-primary" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('Cash')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash" viewBox="0 0 16 16">
-                    <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
-                    <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
-                </svg>
-                Cash
-            </button>
-            <button class="btn btn-warning" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('QR code')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-qr-code" viewBox="0 0 16 16">
-                    <path d="M2 2h2v2H2z"/>
-                    <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z"/>
-                    <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z"/>
-                    <path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z"/>
-                    <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z"/>
-                </svg>
-                QR code
-            </button>
-            <button class="btn btn-success" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('Drankkaart')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
-                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                    <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
-                </svg>
-                Drankkaart
-            </button>
+            <button class="btn btn-primary" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('Cash')">Cash</button>
+            <button class="btn btn-warning" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('QR code')">QR code</button>
+            <button class="btn btn-success" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('Drankkaart')">Drankkaart</button>
         </div>
 
         <div class="actions" style="margin-top: 20px;">
@@ -208,14 +185,6 @@
         document.getElementById('kassaScherm').style.display = 'none';
         document.getElementById('overzichtScherm').style.display = 'none';
         document.getElementById(schermId).style.display = 'flex';
-    }
-
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Service Worker geregistreerd!', reg))
-                .catch(err => console.log('Service Worker mislukt:', err));
-        });
     }
 </script>
 </body>
