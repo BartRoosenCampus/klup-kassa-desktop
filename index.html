@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobiel Kassasysteem</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+
+<div class="container">
+    <h2>Klup Kassa</h2>
+
+    <!-- Producten Paneel met Categorie Filter -->
+    <div class="panel">
+        <h3>Producten</h3>
+        <div id="categorieFilter" class="category-filter"></div>
+        <div id="productGrid" class="product-grid"></div>
+    </div>
+
+    <!-- Huidige Bestelling / Bon -->
+    <div class="panel">
+        <h3>Huidige Bon</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Aant</th>
+                    <th>Prijs</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="bonBody"></tbody>
+            </table>
+        </div>
+
+        <div class="total">Totaal: &euro; <span id="totaalPrijs">0.00</span></div>
+
+        <div class="actions">
+            <button class="btn btn-danger" onclick="wisHuidigeBon()">Wis</button>
+            <button class="btn btn-warning" onclick="openNaamModal()">Op Naam / Tafel</button>
+            <button class="btn btn-primary" onclick="directAfrekenen()">Afrekenen</button>
+        </div>
+    </div>
+
+    <!-- Openstaande Rekeningen (Gebundeld per tafel) -->
+    <div class="panel">
+        <h3>Openstaande Rekeningen</h3>
+        <div class="table-responsive history-list">
+            <table>
+                <thead>
+                <tr>
+                    <th>Naam / Tafel</th>
+                    <th>Tijd</th>
+                    <th>Items</th>
+                    <th>Bedrag</th>
+                    <th>Actie</th>
+                </tr>
+                </thead>
+                <tbody id="openRekeningenBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recente Geschiedenis -->
+    <div class="panel">
+        <h3>Afgerekende Bestellingen</h3>
+        <div class="table-responsive history-list">
+            <table>
+                <thead>
+                <tr>
+                    <th>Tijd</th>
+                    <th>Items</th>
+                    <th>Bedrag</th>
+                </tr>
+                </thead>
+                <tbody id="geschiedenisBody"></tbody>
+            </table>
+        </div>
+        <div class="actions" style="margin-top: 10px;">
+            <button class="btn btn-danger btn-small" onclick="wisGeschiedenis()">Geschiedenis Wissen</button>
+        </div>
+    </div>
+</div>
+
+<!-- POP-UP VENSTER VOOR NAAM/TAFEL SELECTIE -->
+<div id="naamModal" class="modal">
+    <div class="modal-content">
+        <h3>Kies Naam of Tafel</h3>
+
+        <div class="form-group">
+            <label for="bestaandeNamenSelect">Bestaande openstaande tafel/naam:</label>
+            <select id="bestaandeNamenSelect" class="form-control">
+                <option value="">-- Kies bestaande --</option>
+            </select>
+        </div>
+
+        <div style="text-align: center; margin: 10px 0; font-weight: bold; color: #666;">OF</div>
+
+        <div class="form-group">
+            <label for="nieuweNaamInput">Nieuwe naam / tafel invoeren:</label>
+            <input type="text" id="nieuweNaamInput" class="form-control" placeholder="Bijv. Tafel 5 of Jan">
+        </div>
+
+        <div class="actions" style="margin-top: 20px;">
+            <button class="btn btn-danger" onclick="sluitNaamModal()">Annuleren</button>
+            <button class="btn btn-primary" onclick="bevestigNaamEnBewaar()">Opslaan</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/script.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker geregistreerd!', reg))
+                .catch(err => console.log('Service Worker mislukt:', err));
+        });
+    }
+</script>
+</body>
+</html>

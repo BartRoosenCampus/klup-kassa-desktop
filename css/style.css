@@ -1,0 +1,216 @@
+:root {
+    --primary: #007bff;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --bg: #f4f4f9;
+    --card-bg: #ffffff;
+    --text: #333333;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+h2, h3 {
+    text-align: center;
+    color: var(--primary);
+    margin: 10px 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.panel {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.category-filter {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.cat-btn {
+    background: #e9ecef;
+    border: none;
+    padding: 20px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #495057;
+    transition: background 0.2s;
+}
+
+.cat-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+}
+
+.product-btn {
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 10px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 60px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-btn:active {
+    transform: scale(0.97);
+}
+
+.product-prijs {
+    font-size: 13px;
+    font-weight: normal;
+    opacity: 0.9;
+}
+
+.table-responsive {
+    width: 100%;
+    /* Geen overflow meer hier, zodat de tabel volledig uitschuift */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #f8f9fa;
+}
+
+/* Stijlen voor gebundelde weergave */
+.total-row {
+    background-color: #e2f0d9 !important;
+    font-weight: bold;
+}
+
+.total {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 15px;
+    text-align: right;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    text-align: center;
+}
+
+.btn-primary { background: var(--primary); }
+.btn-primary:hover { background: #0056b3; }
+
+.btn-warning { background: var(--warning); color: #212529; }
+.btn-warning:hover { background: #e0a800; }
+
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #c82333; }
+
+.btn-small {
+    padding: 5px 8px;
+    font-size: 12px;
+}
+
+/* Alleen de geschiedenislijst mag eventueel nog kleiner/scrollbaar blijven als je wilt, of pas dit hier ook aan */
+.history-list {
+    font-size: 13px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.test {
+    background-color: #ef8e78;
+}

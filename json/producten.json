@@ -1,0 +1,63 @@
+[
+    { "naam": "Cola", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Cola Zero", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Cola Gold", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Water", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Bruiswater", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Ice tea", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Ice tea zero", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Ice tea green", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Ice tea peach", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Fanta", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Gini", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Schweppes", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Schweppes Agrum", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Chocomelk", "prijs": 2.00, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Tön. Orange", "prijs": 2.50, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Tön. Fruitkorf", "prijs": 2.50, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Tön. Citroen", "prijs": 2.50, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Aquarius Geel", "prijs": 2.50, "categorie": "Fris", "kleur": "#ffc107" },
+    { "naam": "Aquarius Rood", "prijs": 2.50, "categorie": "Fris", "kleur": "#ffc107" },
+
+
+    { "naam": "Stella (vat)", "prijs": 2.50, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Hoegaarden (vat)", "prijs": 2.50, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Jupiler (fles)", "prijs": 2.50, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Grisette (glutenvrij)", "prijs": 2.50, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Jupiler 0,0", "prijs": 2.50, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Kriek Lindemans", "prijs": 2.50, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Duvel", "prijs": 4.00, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Cornet", "prijs": 4.00, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Omer", "prijs": 4.00, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Orval", "prijs": 4.00, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Alpaïde blond cuvée", "prijs": 4.00, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Kasteel rouge 0,0", "prijs": 4.00, "categorie": "Bier", "kleur": "#fd7e14" },
+    { "naam": "Sportzot", "prijs": 4.00, "categorie": "Bier", "kleur": "#fd7e14" },
+
+    { "naam": "Rosé wijn", "prijs": 4.00, "categorie": "Wijn", "kleur": "#14FD79FF" },
+    { "naam": "Witte wijn", "prijs": 4.00, "categorie": "Wijn", "kleur": "#14FD79FF" },
+    { "naam": "Cava", "prijs": 4.00, "categorie": "Wijn", "kleur": "#14FD79FF" },
+
+
+    { "naam": "Witte martini", "prijs": 4.00, "categorie": "Spirit", "kleur": "#5614FDFF" },
+    { "naam": "Bellini", "prijs": 4.00, "categorie": "Spirit", "kleur": "#5614FDFF" },
+    { "naam": "Aperol Spritz", "prijs": 5.00, "categorie": "Spirit", "kleur": "#5614FDFF" },
+
+
+
+    { "naam": "Warme chocomelk", "prijs": 2.00, "categorie": "Warm", "kleur": "#ED3A3AFF" },
+    { "naam": "Koffie", "prijs": 2.00, "categorie": "Warm", "kleur": "#ED3A3AFF" },
+    { "naam": "Koffie Deca", "prijs": 2.00, "categorie": "Warm", "kleur": "#ED3A3AFF" },
+    { "naam": "Koffie Latte", "prijs": 2.00, "categorie": "Warm", "kleur": "#ED3A3AFF" },
+    { "naam": "Thee (assortiment)", "prijs": 2.00, "categorie": "Warm", "kleur": "#ED3A3AFF" },
+
+
+    { "naam": "Croque met saus", "prijs": 2.50, "categorie": "Snacks", "kleur": "#EF8E78FF" },
+    { "naam": "Chips", "prijs": 2.00, "categorie": "Snacks", "kleur": "#EF8E78FF" },
+    { "naam": "Boulet", "prijs": 2.50, "categorie": "Snacks", "kleur": "#EF8E78FF" },
+    { "naam": "Cervela", "prijs": 2.50, "categorie": "Snacks", "kleur": "#EF8E78FF" },
+    { "naam": "Portie koud gemengd", "prijs": 4.00, "categorie": "Snacks", "kleur": "#EF8E78FF" },
+
+    { "naam": "Drankkaart 25", "prijs": 25.00, "categorie": "Drankkaart", "kleur": "#000" },
+    { "naam": "Drankkaart 50", "prijs": 50.00, "categorie": "Drankkaart", "kleur": "#000" }
+]
