@@ -2,12 +2,25 @@ let huidigeBon = [];
 let beschikbareProducten = [];
 let actieveCategorie = 'Alle';
 
+let pendingAfrekening = null;
+
+// Helperfunctie om categorieën als array op te halen (ondersteunt zowel array als oude string-notatie)
+function getProductCategories(prod) {
+    if (Array.isArray(prod.categorie)) {
+        return prod.categorie;
+    } else if (prod.categorie) {
+        return [prod.categorie];
+    }
+    return [];
+}
+
 // 1. Producten inladen uit producten.json
 async function laadProducten() {
     try {
         let response = await fetch('json/producten.json');
         if (!response.ok) throw new Error('Kon producten.json niet laden');
-        beschikbareProducten = await response.json();
+        beschibareProducten = await response.json();
+        beschikbareProducten = beschibareProducten; // fix spelling variabele
 
         bouwCategorieFilters();
         bouwProductKnoppen();
@@ -17,12 +30,18 @@ async function laadProducten() {
     }
 }
 
-// 2. Categorie filterknoppen genereren
+// 2. Categorie filterknoppen genereren (Verzamel alle unieke categorieën uit de arrays)
 function bouwCategorieFilters() {
     let filterContainer = document.getElementById('categorieFilter');
+    if (!filterContainer) return;
     filterContainer.innerHTML = '';
 
-    let categorieen = ['Alle', ...new Set(beschikbareProducten.map(p => p.categorie))];
+    let alleCatSet = new Set();
+    beschikbareProducten.forEach(p => {
+        getProductCategories(p).forEach(c => alleCatSet.add(c));
+    });
+
+    let categorieen = ['Alle', ...alleCatSet];
 
     categorieen.forEach(cat => {
         let btn = document.createElement('button');
@@ -37,14 +56,15 @@ function bouwCategorieFilters() {
     });
 }
 
-// 3. Productknoppen genereren
+// 3. Productknoppen genereren (Filter op producten waarin de actieve categorie voorkomt)
 function bouwProductKnoppen() {
     let grid = document.getElementById('productGrid');
+    if (!grid) return;
     grid.innerHTML = '';
 
     let gefilterd = actieveCategorie === 'Alle'
         ? beschikbareProducten
-        : beschikbareProducten.filter(p => p.categorie === actieveCategorie);
+        : beschikbareProducten.filter(p => getProductCategories(p).includes(actieveCategorie));
 
     gefilterd.forEach(prod => {
         let btn = document.createElement('button');
@@ -77,6 +97,7 @@ function verwijderItem(naam) {
 function updateBonScherm() {
     let bonBody = document.getElementById('bonBody');
     let totaalPrijsEl = document.getElementById('totaalPrijs');
+    if (!bonBody || !totaalPrijsEl) return;
     bonBody.innerHTML = '';
 
     let totaal = 0;
@@ -102,14 +123,77 @@ function wisHuidigeBon() {
     updateBonScherm();
 }
 
-// Direct afrekenen
-function directAfrekenen() {
+// --- BETAALMETHODE MODAL BEHEER ---
+
+function vraagBetaalmethodeDirect() {
     if (huidigeBon.length === 0) {
         alert("De bon is leeg!");
         return;
     }
-    slaBestellingOpInGeschiedenis(huidigeBon, "Directe Verkoop");
-    wisHuidigeBon();
+
+    let totaalBedrag = huidigeBon.reduce((sum, i) => sum + (i.prijs * i.aantal), 0);
+    pendingAfrekening = {
+        type: 'direct',
+        items: [...huidigeBon],
+        bronInfo: 'Directe Verkoop',
+        totaal: totaalBedrag
+    };
+
+    document.getElementById('betaalInfoTekst').innerText = `Afrekenen van directe verkoop (&euro; ${totaalBedrag.toFixed(2)})`;
+    document.getElementById('betaalModal').style.display = 'flex';
+}
+
+function vraagBetaalmethodeTafel(naam) {
+    let openstaande = JSON.parse(localStorage.getItem('open_rekeningen')) || [];
+    let bestellingenVanNaam = openstaande.filter(r => r.naam === naam);
+
+    let alleGecombineerdeItems = [];
+    let totaalBedrag = 0;
+
+    bestellingenVanNaam.forEach(rek => {
+        totaalBedrag += parseFloat(rek.totaal);
+        rek.items.forEach(item => {
+            let bestaand = alleGecombineerdeItems.find(i => i.naam === item.naam);
+            if (bestaand) {
+                bestaand.aantal += item.aantal;
+            } else {
+                alleGecombineerdeItems.push({ ...item });
+            }
+        });
+    });
+
+    pendingAfrekening = {
+        type: 'tafel',
+        naam: naam,
+        items: alleGecombineerdeItems,
+        bronInfo: `Tafel/Naam: ${naam}`,
+        totaal: totaalBedrag
+    };
+
+    document.getElementById('betaalInfoTekst').innerText = `Hele rekening van "${naam}" afrekenen (&euro; ${totaalBedrag.toFixed(2)})`;
+    document.getElementById('betaalModal').style.display = 'flex';
+}
+
+function sluitBetaalModal() {
+    document.getElementById('betaalModal').style.display = 'none';
+    pendingAfrekening = null;
+}
+
+function kiesBetaalmethode(methode) {
+    if (!pendingAfrekening) return;
+
+    slaBestellingOpInGeschiedenis(pendingAfrekening.items, pendingAfrekening.bronInfo, methode);
+
+    if (pendingAfrekening.type === 'direct') {
+        wisHuidigeBon();
+    } else if (pendingAfrekening.type === 'tafel') {
+        let openstaande = JSON.parse(localStorage.getItem('open_rekeningen')) || [];
+        let overgebleven = openstaande.filter(r => r.naam !== pendingAfrekening.naam);
+        localStorage.setItem('open_rekeningen', JSON.stringify(overgebleven));
+        laadOpenstaandeRekeningen();
+    }
+
+    sluitBetaalModal();
 }
 
 // --- MODAL / POP-UP BEHEER VOOR NAMEN ---
@@ -120,18 +204,27 @@ function openNaamModal() {
         return;
     }
 
-    let selectEl = document.getElementById('bestaandeNamenSelect');
-    selectEl.innerHTML = '<option value="">-- Kies bestaande --</option>';
+    let containerEl = document.getElementById('bestaandeNamenKnoppen');
+    containerEl.innerHTML = '';
 
     let openstaande = JSON.parse(localStorage.getItem('open_rekeningen')) || [];
     let uniekeNamen = [...new Set(openstaande.map(r => r.naam))];
 
-    uniekeNamen.forEach(naam => {
-        let opt = document.createElement('option');
-        opt.value = naam;
-        opt.innerText = naam;
-        selectEl.appendChild(opt);
-    });
+    if (uniekeNamen.length === 0) {
+        containerEl.innerHTML = '<span style="font-size: 13px; color: var(--text-muted);">Geen openstaande rekeningen</span>';
+    } else {
+        uniekeNamen.forEach(naam => {
+            let btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn';
+            btn.innerText = naam;
+            btn.onclick = () => {
+                sluitNaamModal();
+                bewaarOpNaam(naam);
+            };
+            containerEl.appendChild(btn);
+        });
+    }
 
     document.getElementById('nieuweNaamInput').value = '';
     document.getElementById('naamModal').style.display = 'flex';
@@ -141,29 +234,31 @@ function sluitNaamModal() {
     document.getElementById('naamModal').style.display = 'none';
 }
 
-function bevestigNaamEnBewaar() {
-    let gekozenDropdown = document.getElementById('bestaandeNamenSelect').value;
+function bevestigNieuweNaam() {
     let getypteNaam = document.getElementById('nieuweNaamInput').value.trim();
 
-    let naam = getypteNaam !== "" ? getypteNaam : gekozenDropdown;
-
-    if (!naam || naam === "") {
-        alert("Kies een bestaande naam of typ een nieuwe in!");
+    if (!getypteNaam || getypteNaam === "") {
+        alert("Typ een nieuwe naam of tafel in!");
         return;
     }
 
     sluitNaamModal();
-    bewaarOpNaam(naam);
+    bewaarOpNaam(getypteNaam);
 }
 
 function bewaarOpNaam(naam) {
     let openstaande = JSON.parse(localStorage.getItem('open_rekeningen')) || [];
     let totaalBedrag = huidigeBon.reduce((sum, i) => sum + (i.prijs * i.aantal), 0);
 
+    let nu = new Date();
+    let datumStr = nu.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    let tijdStr = nu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    let datumTijdStr = `${datumStr} ${tijdStr}`;
+
     let nieuweInvoer = {
         id: Date.now(),
         naam: naam,
-        tijdstip: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        tijdstip: datumTijdStr,
         items: JSON.parse(JSON.stringify(huidigeBon)),
         totaal: totaalBedrag.toFixed(2)
     };
@@ -176,13 +271,12 @@ function bewaarOpNaam(naam) {
 
 // --- EINDE MODAL BEHEER ---
 
-// Laad openstaande rekeningen gebundeld per tafel (volledig zichtbaar zonder scrollbalk)
 function laadOpenstaandeRekeningen() {
     let tbody = document.getElementById('openRekeningenBody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     let openstaande = JSON.parse(localStorage.getItem('open_rekeningen')) || [];
-    if (openstaande.length === 0) return;
 
     let tafels = {};
     openstaande.forEach((rek) => {
@@ -192,6 +286,19 @@ function laadOpenstaandeRekeningen() {
         tafels[rek.naam].bestellingen.push(rek);
         tafels[rek.naam].totaalBedrag += parseFloat(rek.totaal);
     });
+
+    let aantalOpen = Object.keys(tafels).length;
+    let badgeEl = document.getElementById('openCountBadge');
+    if (badgeEl) {
+        if (aantalOpen > 0) {
+            badgeEl.innerText = aantalOpen;
+            badgeEl.style.display = 'inline-block';
+        } else {
+            badgeEl.style.display = 'none';
+        }
+    }
+
+    if (openstaande.length === 0) return;
 
     for (let naam in tafels) {
         let tafelData = tafels[naam];
@@ -217,14 +324,13 @@ function laadOpenstaandeRekeningen() {
             <td colspan="3">Totaal te betalen voor <strong>${naam}</strong></td>
             <td>&euro; ${totaalTafelBedrag}</td>
             <td>
-                <button class="btn btn-primary btn-small" onclick="rekenAfHeleRekening('${naam}')">Afrekenen</button>
+                <button class="btn btn-primary btn-small" onclick="vraagBetaalmethodeTafel('${naam}')">Afrekenen</button>
             </td>
         </tr>`;
         tbody.innerHTML += totalRow;
     }
 }
 
-// Specifieke openstaande regel verwijderen
 function verwijderOpenstaandeRegel(index) {
     let openstaande = JSON.parse(localStorage.getItem('open_rekeningen')) || [];
     let rek = openstaande[index];
@@ -236,45 +342,20 @@ function verwijderOpenstaandeRegel(index) {
     }
 }
 
-// Volledige rekening van een naam/tafel in 1 keer afrekenen
-function rekenAfHeleRekening(naam) {
-    let openstaande = JSON.parse(localStorage.getItem('open_rekeningen')) || [];
-
-    let bestellingenVanNaam = openstaande.filter(r => r.naam === naam);
-
-    let alleGecombineerdeItems = [];
-    let totaalBedrag = 0;
-
-    bestellingenVanNaam.forEach(rek => {
-        totaalBedrag += parseFloat(rek.totaal);
-        rek.items.forEach(item => {
-            let bestaand = alleGecombineerdeItems.find(i => i.naam === item.naam);
-            if (bestaand) {
-                bestaand.aantal += item.aantal;
-            } else {
-                alleGecombineerdeItems.push({ ...item });
-            }
-        });
-    });
-
-    if (confirm(`Hele rekening van "${naam}" (&euro; ${totaalBedrag.toFixed(2)}) in één keer afrekenen?`)) {
-        slaBestellingOpInGeschiedenis(alleGecombineerdeItems, `Tafel/Naam: ${naam}`);
-
-        let overgebleven = openstaande.filter(r => r.naam !== naam);
-        localStorage.setItem('open_rekeningen', JSON.stringify(overgebleven));
-
-        laadOpenstaandeRekeningen();
-    }
-}
-
-// Sla op in geschiedenis
-function slaBestellingOpInGeschiedenis(itemsArray, bronInfo) {
+function slaBestellingOpInGeschiedenis(itemsArray, bronInfo, betaalmethode) {
     let totaalBedrag = itemsArray.reduce((sum, item) => sum + (item.prijs * item.aantal), 0);
 
+    let nu = new Date();
+    let datumStr = nu.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    let tijdStr = nu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     let bestelling = {
-        tijdstip: `${bronInfo} (${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`,
+        datum: datumStr,
+        tijdstip: tijdStr,
+        tafelNaam: bronInfo,
         items: [...itemsArray],
-        totaal: totaalBedrag.toFixed(2)
+        totaal: totaalBedrag.toFixed(2),
+        betaalmethode: betaalmethode || 'Onbekend'
     };
 
     let geschiedenis = JSON.parse(localStorage.getItem('kassa_bestellingen')) || [];
@@ -284,19 +365,27 @@ function slaBestellingOpInGeschiedenis(itemsArray, bronInfo) {
     laadGeschiedenis();
 }
 
-// Laad geschiedenis
 function laadGeschiedenis() {
     let tbody = document.getElementById('geschiedenisBody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     let geschiedenis = JSON.parse(localStorage.getItem('kassa_bestellingen')) || [];
 
     geschiedenis.forEach(b => {
         let itemList = b.items.map(i => `${i.aantal}x ${i.naam}`).join(', ');
+        let tafelInfo = b.tafelNaam || "Directe Verkoop";
+        let datumVal = b.datum || "-";
+        let tijdVal = b.tijdstip || "-";
+        let methodeVal = b.betaalmethode || "-";
+
         let row = `<tr>
-            <td>${b.tijdstip}</td>
+            <td>${datumVal}</td>
+            <td>${tijdVal}</td>
+            <td><strong>${tafelInfo}</strong></td>
             <td>${itemList}</td>
             <td>&euro; ${b.totaal}</td>
+            <td>${methodeVal}</td>
         </tr>`;
         tbody.innerHTML += row;
     });
@@ -309,7 +398,6 @@ function wisGeschiedenis() {
     }
 }
 
-// Startapplicatie
 window.onload = function() {
     laadProducten();
     laadOpenstaandeRekeningen();

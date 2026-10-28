@@ -3,118 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobiel Kassasysteem</title>
+    <title>Klup Kassa Desktop</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#121212">
 </head>
 <body>
 
-<div class="container">
-    <h2>Klup Kassa</h2>
+<!-- SCHERM 1: KASSASCHERM -->
+<div id="kassaScherm" class="desktop-container">
 
-    <!-- Producten Paneel met Categorie Filter -->
-    <div class="panel">
-        <h3>Producten</h3>
-        <div id="categorieFilter" class="category-filter"></div>
-        <div id="productGrid" class="product-grid"></div>
-    </div>
-
-    <!-- Huidige Bestelling / Bon -->
-    <div class="panel">
-        <h3>Huidige Bon</h3>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Aant</th>
-                    <th>Prijs</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody id="bonBody"></tbody>
-            </table>
+    <!-- LINKERKOLOM: Logo, Titel & Producten -->
+    <div class="column">
+        <div class="brand-header">
+            <img src="img/logo.png" alt="Logo" class="app-logo">
+            <h2>Klup Kassa</h2>
         </div>
 
-        <div class="total">Totaal: &euro; <span id="totaalPrijs">0.00</span></div>
-
-        <div class="actions">
-            <button class="btn btn-danger" onclick="wisHuidigeBon()">Wis</button>
-            <button class="btn btn-warning" onclick="openNaamModal()">Op Naam / Tafel</button>
-            <button class="btn btn-primary" onclick="directAfrekenen()">Afrekenen</button>
+        <div class="panel flex-grow">
+            <h3>Producten</h3>
+            <div id="categorieFilter" class="category-filter"></div>
+            <div id="productGrid" class="product-grid"></div>
         </div>
     </div>
 
-    <!-- Openstaande Rekeningen (Gebundeld per tafel) -->
-    <div class="panel">
-        <h3>Openstaande Rekeningen</h3>
-        <div class="table-responsive history-list">
-            <table>
-                <thead>
-                <tr>
-                    <th>Naam / Tafel</th>
-                    <th>Tijd</th>
-                    <th>Items</th>
-                    <th>Bedrag</th>
-                    <th>Actie</th>
-                </tr>
-                </thead>
-                <tbody id="openRekeningenBody"></tbody>
-            </table>
+    <!-- RECHTERKOLOM: Huidige Bon & Schakelknop -->
+    <div class="column">
+        <!-- Huidige Bestelling / Bon -->
+        <div class="panel">
+            <h3>Huidige Bon</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Aant</th>
+                        <th>Prijs</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="bonBody"></tbody>
+                </table>
+            </div>
+
+            <div class="total">Totaal: &euro; <span id="totaalPrijs">0.00</span></div>
+
+            <div class="actions">
+                <button class="btn btn-danger" onclick="wisHuidigeBon()">Wis</button>
+                <button class="btn btn-warning" onclick="openNaamModal()">Op Naam / Tafel</button>
+                <button class="btn btn-primary" onclick="vraagBetaalmethodeDirect()">Afrekenen</button>
+            </div>
+        </div>
+
+        <!-- Knop naar Openstaande Rekeningen & Geschiedenis met Teller Badge -->
+        <div class="panel text-center">
+            <button class="btn btn-secondary full-width" onclick="toonScherm('overzichtScherm')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart" viewBox="0 0 16 16">
+                    <path d="M4 11H2v3h2zm5-4H7v7h2zm5-5v12h-2V2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z"/>
+                </svg>
+                Openstaande Rekeningen & Geschiedenis
+                <span id="openCountBadge" class="badge" style="display: none;">0</span>
+            </button>
         </div>
     </div>
 
-    <!-- Recente Geschiedenis -->
-    <div class="panel">
-        <h3>Afgerekende Bestellingen</h3>
-        <div class="table-responsive history-list">
-            <table>
-                <thead>
-                <tr>
-                    <th>Tijd</th>
-                    <th>Items</th>
-                    <th>Bedrag</th>
-                </tr>
-                </thead>
-                <tbody id="geschiedenisBody"></tbody>
-            </table>
+</div>
+
+<!-- SCHERM 2: OVERZICHTSSCHERM -->
+<div id="overzichtScherm" class="desktop-container" style="display: none;">
+    <div class="column full-width">
+        <div class="brand-header flex-between">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="img/logo.png" alt="Logo" class="app-logo">
+                <h2>Openstaande Rekeningen & Geschiedenis</h2>
+            </div>
+            <button class="btn btn-secondary" onclick="toonScherm('kassaScherm')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+                Terug naar Kassa
+            </button>
         </div>
-        <div class="actions" style="margin-top: 10px;">
-            <button class="btn btn-danger btn-small" onclick="wisGeschiedenis()">Geschiedenis Wissen</button>
+
+        <!-- Openstaande Rekeningen -->
+        <div class="panel">
+            <h3>Openstaande Rekeningen</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Naam / Tafel</th>
+                        <th>Tijd</th>
+                        <th>Items</th>
+                        <th>Bedrag</th>
+                        <th>Actie</th>
+                    </tr>
+                    </thead>
+                    <tbody id="openRekeningenBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recente Geschiedenis -->
+        <div class="panel">
+            <h3>Afgerekende Bestellingen</h3>
+            <div class="table-responsive history-list">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Tijd</th>
+                        <th>Tafel/naam</th>
+                        <th>Items</th>
+                        <th>Bedrag</th>
+                        <th>Betaalmethode</th>
+                    </tr>
+                    </thead>
+                    <tbody id="geschiedenisBody"></tbody>
+                </table>
+            </div>
+            <div class="actions" style="margin-top: 10px;">
+                <button class="btn btn-danger" onclick="wisGeschiedenis()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                    </svg>
+                    Geschiedenis Wissen
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- POP-UP VENSTER VOOR NAAM/TAFEL SELECTIE -->
+<!-- POP-UP VENSTER VOOR NAAM/TAFEL SELECTIE (Met Knoppen) -->
 <div id="naamModal" class="modal">
     <div class="modal-content">
         <h3>Kies Naam of Tafel</h3>
 
         <div class="form-group">
-            <label for="bestaandeNamenSelect">Bestaande openstaande tafel/naam:</label>
-            <select id="bestaandeNamenSelect" class="form-control">
-                <option value="">-- Kies bestaande --</option>
-            </select>
+            <label>Bestaande openstaande tafel / naam:</label>
+            <div id="bestaandeNamenKnoppen" class="modal-btn-grid">
+                <!-- Wordt dynamisch gevuld via script.js -->
+            </div>
         </div>
 
-        <div style="text-align: center; margin: 10px 0; font-weight: bold; color: #666;">OF</div>
+        <div style="text-align: center; margin: 15px 0; font-weight: bold; color: #aaa;">OF</div>
 
         <div class="form-group">
             <label for="nieuweNaamInput">Nieuwe naam / tafel invoeren:</label>
-            <input type="text" id="nieuweNaamInput" class="form-control" placeholder="Bijv. Tafel 5 of Jan">
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="nieuweNaamInput" class="form-control" placeholder="Bijv. Tafel 5 of Jan">
+                <button class="btn btn-primary" style="flex: 0 0 100px;" onclick="bevestigNieuweNaam()">Opslaan</button>
+            </div>
         </div>
 
         <div class="actions" style="margin-top: 20px;">
-            <button class="btn btn-danger" onclick="sluitNaamModal()">Annuleren</button>
-            <button class="btn btn-primary" onclick="bevestigNaamEnBewaar()">Opslaan</button>
+            <button class="btn btn-danger full-width" onclick="sluitNaamModal()">Annuleren</button>
+        </div>
+    </div>
+</div>
+
+<!-- POP-UP VENSTER VOOR BETAALMETHODE -->
+<div id="betaalModal" class="modal">
+    <div class="modal-content">
+        <h3>Kies Betaalmethode</h3>
+        <p id="betaalInfoTekst" style="font-size: 14px; color: var(--text-muted); margin-bottom: 15px;"></p>
+
+        <div class="modal-btn-grid" style="grid-template-columns: 1fr; gap: 10px; max-height: none;">
+            <button class="btn btn-primary" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('Cash')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash" viewBox="0 0 16 16">
+                    <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                    <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
+                </svg>
+                Cash
+            </button>
+            <button class="btn btn-warning" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('QR code')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-qr-code" viewBox="0 0 16 16">
+                    <path d="M2 2h2v2H2z"/>
+                    <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z"/>
+                    <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z"/>
+                    <path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z"/>
+                    <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z"/>
+                </svg>
+                QR code
+            </button>
+            <button class="btn btn-success" style="padding: 12px; font-size: 16px;" onclick="kiesBetaalmethode('Drankkaart')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
+                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                    <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                </svg>
+                Drankkaart
+            </button>
+        </div>
+
+        <div class="actions" style="margin-top: 20px;">
+            <button class="btn btn-danger full-width" onclick="sluitBetaalModal()">Annuleren</button>
         </div>
     </div>
 </div>
 
 <script src="js/script.js"></script>
 <script>
+    function toonScherm(schermId) {
+        document.getElementById('kassaScherm').style.display = 'none';
+        document.getElementById('overzichtScherm').style.display = 'none';
+        document.getElementById(schermId).style.display = 'flex';
+    }
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
