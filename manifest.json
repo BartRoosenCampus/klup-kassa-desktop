@@ -1,6 +1,6 @@
 {
-  "name": "Klup Kassa Desktop",
-  "short_name": "Klup Kassa Desktop",
+  "name": "Klup Kassa",
+  "short_name": "Klup Kassa",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
