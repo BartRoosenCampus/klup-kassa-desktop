@@ -269,17 +269,14 @@ function openHernoemModal(globalIndex) {
     let rek = openstaande[globalIndex];
     if (!rek) return;
 
-    // Verwijder eventuele oude dynamische modal mocht die er nog zijn
     let oudeModal = document.getElementById('dynamischHernoemModal');
     if (oudeModal) oudeModal.remove();
 
-    // Maak de modal overlay container aan
     let modal = document.createElement('div');
     modal.id = 'dynamischHernoemModal';
     modal.className = 'modal';
     modal.style.display = 'flex';
 
-    // Inhoud van de modal
     let content = document.createElement('div');
     content.className = 'modal-content';
 
@@ -294,7 +291,6 @@ function openHernoemModal(globalIndex) {
     info.innerText = `Bestelling van "${rek.naam}" (€ ${rek.totaal}) verplaatsen als nieuwe regel naar:`;
     content.appendChild(info);
 
-    // Groep voor bestaande namen knoppen
     let group1 = document.createElement('div');
     group1.className = 'form-group';
     let label1 = document.createElement('label');
@@ -314,7 +310,6 @@ function openHernoemModal(globalIndex) {
             btn.type = 'button';
             btn.className = 'btn';
             btn.innerText = naam;
-            // Direct event listener toevoegen bij creatie
             btn.addEventListener('click', () => {
                 verplaatsNaarNaam(globalIndex, naam);
                 modal.remove();
@@ -325,13 +320,11 @@ function openHernoemModal(globalIndex) {
     group1.appendChild(btnGrid);
     content.appendChild(group1);
 
-    // Scheidingsteken 'OF'
     let sep = document.createElement('div');
     sep.style.cssText = 'text-align: center; margin: 15px 0; font-weight: bold; color: #aaa;';
     sep.innerText = 'OF';
     content.appendChild(sep);
 
-    // Groep voor nieuwe naam invoeren
     let group2 = document.createElement('div');
     group2.className = 'form-group';
     let label2 = document.createElement('label');
@@ -364,7 +357,6 @@ function openHernoemModal(globalIndex) {
     group2.appendChild(inputRow);
     content.appendChild(group2);
 
-    // Annuleren knop
     let actions = document.createElement('div');
     actions.className = 'actions';
     actions.style.marginTop = '20px';
@@ -388,7 +380,6 @@ function verplaatsNaarNaam(index, nieuweNaam) {
 
     if (!teVerplaatsenRekening) return;
 
-    // Verander de naam van deze specifieke regel, zodat deze als nieuwe losse lijn onder de doelnaam komt te staan
     teVerplaatsenRekening.naam = nieuweNaam;
 
     localStorage.setItem('open_rekeningen', JSON.stringify(openstaande));
@@ -463,7 +454,6 @@ function laadOpenstaandeRekeningen() {
         tbody.innerHTML += totalRow;
     }
 
-    // Event listeners dynamisch toevoegen aan de gegenereerde knoppen in de tabel
     document.querySelectorAll('.btn-zet-op').forEach(btn => {
         btn.addEventListener('click', (e) => {
             let index = parseInt(e.currentTarget.getAttribute('data-index'));
@@ -547,7 +537,26 @@ function laadGeschiedenis() {
 }
 
 function wisGeschiedenis() {
-    if (confirm("Alle geschiedenis wissen?")) {
+    let geschiedenis = JSON.parse(localStorage.getItem('kassa_bestellingen')) || [];
+
+    if (geschiedenis.length === 0) {
+        alert("Er is geen geschiedenis om te wissen of exporteren.");
+        return;
+    }
+
+    if (confirm("Wil je de geschiedenis wissen? Er wordt eerst automatisch een JSON-export gedownload.")) {
+        // Exporteer naar JSON
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geschiedenis, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+
+        let datumNu = new Date().toISOString().slice(0, 10);
+        downloadAnchor.setAttribute("download", `kassa_geschiedenis_${datumNu}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+
+        // Wis daarna de geschiedenis
         localStorage.removeItem('kassa_bestellingen');
         laadGeschiedenis();
     }

@@ -332,3 +332,7 @@ th {
     display: flex;
     flex-direction: column;
 }
+
+.test {
+    background-color: #05789c;
+}
